@@ -17,14 +17,14 @@ void get_URL(const string &host, const string &path) {
     // (not just one call to read() -- everything) until you reach
     // the "eof" (end of file).
 
-    //1 connect to http server.
+    // 1 connect to http server.
     const Address http_webserver(host, "http");
 
     // create another socket and connect to the first one
     TCPSocket sock1;
-    
+
     sock1.connect(http_webserver);
-    //2 send request with url in path.
+    // 2 send request with url in path.
     sock1.write("GET " + path + " HTTP/1.1\r\n");
     sock1.write("Host: " + host + "\r\n");
     sock1.write("Connection: close\r\n");
@@ -33,15 +33,13 @@ void get_URL(const string &host, const string &path) {
     // string e = path;
     string recvd;
     // cout << "we get breakpoints" << endl;
-    while (!sock1.eof())
-    {
+    while (!sock1.eof()) {
         recvd = sock1.read();
         cout << recvd;
     }
     //  recvd = sock1.read();
     //     cout << recvd;
     sock1.close();
-    
 
     // cerr << "Function called: get_URL(" << host << ", " << path << ").\n";
     // cerr << "Warning: get_URL() has not been implemented yet.\n";

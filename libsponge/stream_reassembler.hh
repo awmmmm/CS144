@@ -4,6 +4,8 @@
 #include "byte_stream.hh"
 
 #include <cstdint>
+#include <deque>
+#include <set>
 #include <string>
 
 //! \brief A class that assembles a series of excerpts from a byte stream (possibly out of order,
@@ -12,9 +14,47 @@ class StreamReassembler {
   private:
     // Your code here -- add private members as necessary.
 
+    struct Comp {
+        bool operator()(const std::pair<size_t, size_t> &lhs, const std::pair<size_t, size_t> &rhs) const {
+            return lhs.first < rhs.first;
+        }
+    };
+
     ByteStream _output;  //!< The reassembled in-order byte stream
     size_t _capacity;    //!< The maximum number of bytes
 
+    // size_t _capacity_strbuf;
+
+    size_t first_unassembled = 0;
+    size_t first_unaccepctable = 0;  // means the buffer left bound
+    std::deque<char> string_buffer = {};
+    std::set<std::pair<size_t, size_t>, Comp> sections = {};
+
+    std::pair<size_t, size_t> merge(
+        const size_t o_left,
+        const size_t o_right,
+        const size_t n_left,
+        const size_t n_right);  // operate std::vector<char> &str_buf and the set maybe need merge more than once
+    // need more consider the args and maybe return pair<left,right> after merge;insert once is better
+
+    bool _eof = false;
+    size_t end_index = 0;  // if end_index == byte_written real end;
+
+    void push_into_buf(const size_t left, const size_t right, const std::string &data, const size_t _first_unassembled);
+
+    bool need_merge(const size_t o_left, const size_t o_right, const size_t n_left, const size_t n_right);
+
+    std::pair<size_t, size_t> set_merge(const size_t left, const size_t right);
+
+    // size_t end = 0;        // buffer's end
+    // size_t temp_head = 0;  // temp's head
+    // size_t temp_end = 0;   // temp's end
+    // size_t _index = 0;     // the next index of the last index of current stream byte;also means buffer's head
+    // // these point are all index based on the byte within stream
+    // // all end like iter in a vector,which means it's point to the next of last byte
+    // std::string string_buffer = "";  // used to keep substring until early index is done
+    //                                  // or may be deque<char> is better
+    //                                  // deque<char> string_buffer = {};
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
     //! \note This capacity limits both the bytes that have been reassembled,

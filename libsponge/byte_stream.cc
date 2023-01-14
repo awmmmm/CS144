@@ -22,6 +22,8 @@ ByteStream::ByteStream(const size_t capacity) {
 }
 
 size_t ByteStream::write(const string &data) {
+    if (ByteStream::input_ended())
+        return 0;
     size_t data_size = data.size();
 
     if (data_size <= ByteStream::remaining_capacity_) {

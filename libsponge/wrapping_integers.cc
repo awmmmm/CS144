@@ -1,5 +1,6 @@
 #include "wrapping_integers.hh"
 
+#include <algorithm>
 // Dummy implementation of a 32-bit wrapping integer
 
 // For Lab 2, please replace with a real implementation that passes the
@@ -14,8 +15,10 @@ using namespace std;
 //! \param n The input absolute 64-bit sequence number
 //! \param isn The initial sequence number
 WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
-    DUMMY_CODE(n, isn);
-    return WrappingInt32{0};
+    uint32_t absolute32 = n % 4294967296;
+    WrappingInt32 res = isn + absolute32;
+
+    return res;
 }
 
 //! Transform a WrappingInt32 into an "absolute" 64-bit sequence number (zero-indexed)
@@ -29,6 +32,13 @@ WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
 //! and the other stream runs from the remote TCPSender to the local TCPReceiver and
 //! has a different ISN.
 uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
-    DUMMY_CODE(n, isn, checkpoint);
-    return {};
+    uint32_t offset = n - wrap(checkpoint, isn);
+
+    uint64_t ret = checkpoint + offset;
+    if (offset > (1u << 31) && ret >= (1ul << 32)) {
+        ret -= (1ul << 32);
+    }
+    // i think there still problem ,if offset == 2^31，then both checkpoint +/or - offset is the ans;
+
+    return ret;
 }

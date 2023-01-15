@@ -15,7 +15,7 @@ void TCPReceiver::segment_received(const TCPSegment &seg) {
     Buffer payload = seg.payload();
     WrappingInt32 seqno = head.seqno;
     uint64_t checkpoint = _reassembler.stream_out().bytes_written();
-    checkpoint = checkpoint > 0 ? checkpoint - 1 : 0;
+    // checkpoint = checkpoint > 0 ? checkpoint - 1 : 0;
     if (head.syn) {
         _isn = true;
         isn = seqno;

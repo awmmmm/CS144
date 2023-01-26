@@ -8,6 +8,7 @@
 
 #include <functional>
 #include <queue>
+#include <set>
 
 //! \brief The "sender" part of a TCP implementation.
 
@@ -15,6 +16,7 @@
 //! segments, keeps track of which segments are still in-flight,
 //! maintains the Retransmission Timer, and retransmits in-flight
 //! segments if the retransmission timer expires.
+
 class TCPSender {
   private:
     //! our initial sequence number, the number for our SYN.
@@ -25,12 +27,43 @@ class TCPSender {
 
     //! retransmission timer for the connection
     unsigned int _initial_retransmission_timeout;
+    unsigned int _RTO;
 
     //! outgoing stream of bytes that have not yet been sent
     ByteStream _stream;
 
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
+
+    // ----------------------------------------------
+    uint64_t _total_ms = 0;  // for tick
+
+    uint16_t _window_size = 1;  // the current window size from receiver?
+
+    uint16_t _window_size_receiver = 1;
+
+    uint64_t _bytes_in_flight = 0;
+    // struct outstanding_segment {
+    //     TCPSegment seg;
+    //     uint64_t last_seqno;
+    // };
+    unsigned int _consecutive_retransmissions = 0;
+
+    std::queue<TCPSegment>
+        outstanding_segments_out{};  // or other set or make a new class,need easy to find and pop out
+
+    // uint64_t binary_search(std::deque<outstanding_segment> &outstanding_segments, uint64_t target);
+    //--------------------------------------------
+    // timer
+    bool _run = false;
+    bool _expire = false;
+    bool _start_timer = false;
+    uint64_t timestart = 0;
+    uint64_t timeexpire = 0;
+
+    inline void timer_start();
+    inline void timer_alarm();
+    inline void timer_end();
 
   public:
     //! Initialize a TCPSender

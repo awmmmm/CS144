@@ -94,11 +94,11 @@ bool ByteStream::input_ended() const { return ByteStream::end_input_; }
 
 size_t ByteStream::buffer_size() const { return ByteStream::buffer.size(); }
 
-bool ByteStream::buffer_empty() const { 
-    if(buffer_size()==0)
-    return true; 
+bool ByteStream::buffer_empty() const {
+    if (buffer_size() == 0)
+        return true;
     return false;
-    }
+}
 
 bool ByteStream::eof() const { return ByteStream::eof_; }
 

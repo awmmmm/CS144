@@ -1,8 +1,8 @@
 #ifndef SPONGE_LIBSPONGE_BYTE_STREAM_HH
 #define SPONGE_LIBSPONGE_BYTE_STREAM_HH
 
+#include <buffer.hh>
 #include <string>
-
 //! \brief An in-order byte stream.
 
 //! Bytes are written on the "input" side and read from the "output"
@@ -17,7 +17,8 @@ class ByteStream {
     // that's a sign that you probably want to keep exploring
     // different approaches.
 
-    std::string buffer = "";  // means next capacity
+    // std::string buffer = "";  // means next capacity
+    BufferList buffer{};
     size_t remaining_capacity_ = 0;
     size_t capacity_ = 0;
     bool end_input_ = false;

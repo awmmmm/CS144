@@ -22,12 +22,13 @@ ByteStream::ByteStream(const size_t capacity) {
 }
 
 size_t ByteStream::write(const string &data) {
-    if (ByteStream::input_ended())
+    if (ByteStream::eof())
         return 0;
     size_t data_size = data.size();
 
     if (data_size <= ByteStream::remaining_capacity_) {
-        ByteStream::buffer = ByteStream::buffer + data;
+        buffer.append(BufferList(string(data.begin(), data.end())));
+        // ByteStream::buffer = ByteStream::buffer + data;
         ByteStream::remaining_capacity_ -= data_size;
         ByteStream::bytes_written_ += data_size;
         // end_input();
@@ -35,7 +36,8 @@ size_t ByteStream::write(const string &data) {
     }
 
     size_t temp = ByteStream::remaining_capacity_;
-    ByteStream::buffer = ByteStream::buffer + data.substr(0, temp);
+    // ByteStream::buffer = ByteStream::buffer + data.substr(0, temp);
+    buffer.append(BufferList(string(data.begin(), data.begin() + temp)));
     ByteStream::remaining_capacity_ = 0;
     ByteStream::bytes_written_ += temp;
 
@@ -44,9 +46,10 @@ size_t ByteStream::write(const string &data) {
 
 //! \param[in] len bytes will be copied from the output side of the buffer
 string ByteStream::peek_output(const size_t len) const {
+    string str = buffer.concatenate();
     if (len >= ByteStream::buffer.size())
-        return ByteStream::buffer;
-    return ByteStream::buffer.substr(0, len);
+        return str;
+    return string(str.begin(), str.begin() + len);
 
     // DUMMY_CODE(len);
     // return {};
@@ -57,13 +60,14 @@ void ByteStream::pop_output(const size_t len) {
     if (len >= ByteStream::buffer.size()) {
         if (input_ended())
             ByteStream::eof_ = true;
+        size_t n = ByteStream::buffer.size();
         ByteStream::remaining_capacity_ += ByteStream::buffer.size();
         ByteStream::bytes_read_ += ByteStream::buffer.size();
-        ByteStream::buffer = "";
+        ByteStream::buffer.remove_prefix(n);
         return;
     }
-
-    ByteStream::buffer = ByteStream::buffer.substr(len);
+    ByteStream::buffer.remove_prefix(len);
+    // ByteStream::buffer = ByteStream::buffer.substr(len);
     ByteStream::bytes_read_ += len;
     ByteStream::remaining_capacity_ += len;
 }
@@ -90,7 +94,11 @@ bool ByteStream::input_ended() const { return ByteStream::end_input_; }
 
 size_t ByteStream::buffer_size() const { return ByteStream::buffer.size(); }
 
-bool ByteStream::buffer_empty() const { return ByteStream::buffer.empty(); }
+bool ByteStream::buffer_empty() const { 
+    if(buffer_size()==0)
+    return true; 
+    return false;
+    }
 
 bool ByteStream::eof() const { return ByteStream::eof_; }
 

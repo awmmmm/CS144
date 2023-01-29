@@ -184,8 +184,6 @@ void TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
             _bytes_in_flight -= outstanding_segments_out.front().length_in_sequence_space();
             outstanding_segments_out.pop();
         }
-
-    
     }
     // When all outstanding data has been acknowledged, stop the retransmission timer.
     if (outstanding_segments_out.empty())

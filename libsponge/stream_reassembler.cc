@@ -53,8 +53,8 @@ void StreamReassembler::push_substring(const string &data, const size_t index, c
 
             if (res.second > data_index) {
                 _output.write(data.substr(first_unassembled - index));
-                _output.write(string(string_buffer.begin() + data_index - first_unassembled,
-                                     string_buffer.begin() + res.second - first_unassembled));
+                _output.write(string(string_buffer.begin() + (data_index - first_unassembled),
+                                     string_buffer.begin() + (res.second - first_unassembled)));
 
                 first_unassembled = res.second;
                 first_unaccepctable = first_unassembled + _output.remaining_capacity();
@@ -100,7 +100,7 @@ void StreamReassembler::push_into_buf(const size_t left,
                                       const size_t right,
                                       const string &data,
                                       const size_t _first_unassembled) {
-    copy(data.begin(), data.begin() + right - left, string_buffer.begin() + left - _first_unassembled);
+    copy(data.begin(), data.begin() + (right - left), string_buffer.begin() + (left - _first_unassembled));
     if (!sections.empty()) {
         auto iter = sections.begin();
         size_t tmp_left = left;

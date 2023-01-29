@@ -22,13 +22,9 @@ class TCPConnection {
     bool _linger_after_streams_finish{true};
 
     // timer
-    uint64_t _last_time = 0;
-    uint64_t _current_time = 0;
+    // uint64_t _last_time = 0;
+    // uint64_t _current_time = 0;
     size_t _time_since_last_segment_received = 0;
-
-    void tcpconnection_send(bool RST);
-
-    bool _last_received = false;
 
   public:
     //! \name "Input" interface for the writer
